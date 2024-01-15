@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/user';
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginHandlerVue from '../components/LoginHandler.vue';
 import HomeView from '../views/HomeView.vue';
@@ -11,19 +12,42 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    {
       path: '/login',
       name: 'login',
       component: LoginHandlerVue
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../views/Dashboard.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/new',
+      name: 'new',
+      component: () => import('../views/NewComparison.vue'),
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  console.log(to.meta);
+  if (to.meta.requiresAuth) {
+    const userStore = useUserStore();
+    if (userStore.isLoggedIn) {
+      next();
+    } else {
+      userStore.$reset();
+      next('/login');
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

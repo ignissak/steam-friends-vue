@@ -1,0 +1,73 @@
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+
+export const useUserStore = defineStore(
+  'user',
+  () => {
+    const user = ref({} as User | null);
+    const friends = ref([] as User[]);
+    const userGames = ref([] as any[]);
+
+    const isLoggedIn = computed(() => {
+      if (user.value === null) return false;
+      if (user.value.steamid) {
+        return true;
+      }
+      return false;
+    });
+
+    const login = (u: User) => {
+      user.value = u;
+      console.log('Signed in using:', user.value);
+    };
+
+    const fetchUserGames = (): Promise<void> => {
+      return new Promise<void>(async (resolve, reject) => {
+        try {
+          if (userGames.value.length > 0) {
+            resolve();
+            return;
+          }
+          const response = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/steam/${user.value?.steamid}/games`,
+            {
+              credentials: 'include'
+            }
+          );
+          const json = await response.json();
+          userGames.value = json.data;
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+    };
+
+    const fetchFriends = (): Promise<void> => {
+      return new Promise<void>(async (resolve, reject) => {
+        try {
+          if (friends.value.length > 0) {
+            resolve();
+            return;
+          }
+          const response = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/steam/${user.value?.steamid}/friends`,
+            {
+              credentials: 'include'
+            }
+          );
+          const json = await response.json();
+          friends.value = json.data;
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+    };
+
+    return { user, isLoggedIn, login, userGames, fetchUserGames, fetchFriends, friends };
+  },
+  {
+    persist: true
+  }
+);
