@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
+import { useUtilsStore } from '@/stores/utils';
 import { sort } from 'fast-sort';
 import { ref } from 'vue';
 
-defineEmits(['reloadComponent']);
-
+const emit = defineEmits(['reloadComponent']);
 const userStore = useUserStore();
 await userStore.fetchFriends();
+
+const utilsStore = useUtilsStore();
 
 let friends = ref(userStore.friends);
 
@@ -67,25 +69,32 @@ const reset = async () => {
   handleFilterChange();
 };
 
+const reloadComponent = async () => {
+  if (
+    utilsStore.lastReloadNewCompare === 0 ||
+    Date.now() - utilsStore.lastReloadNewCompare > 60 * 10 * 1000
+  ) {
+    utilsStore.lastReloadNewCompare = Date.now();
+    userStore.resetFriends();
+    emit('reloadComponent');
+  }
+};
+
 const submit = async () => {};
 </script>
 
 <template>
   <main class="container">
-    <h2 class="">Select friends you want to compare with</h2>
-    <p class="mb-4 text-sm text-neutral-400">
-      Friend list may be not updated. If you wish to manually refresh, please click
-      <span
-        class="link"
-        @click="
-          () => {
-            userStore.resetFriends();
-            $emit('reloadComponent');
-          }
-        "
-        >here</span
-      >.
-    </p>
+    <div class="mb-4">
+      <h2 class="">Select friends you want to compare with</h2>
+      <p
+        class="text-sm text-neutral-400"
+        v-if="Date.now() - utilsStore.lastReloadNewCompare > 60 * 10 * 1000"
+      >
+        Friend list may be not updated. If you wish to manually refresh, please click
+        <span class="link" @click="reloadComponent">here</span>.
+      </p>
+    </div>
     <section
       id="filters"
       class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
