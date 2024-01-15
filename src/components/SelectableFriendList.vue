@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
 import { ref } from 'vue';
+import { sort } from 'fast-sort';
 
 const userStore = useUserStore();
 await userStore.fetchFriends();
@@ -9,35 +10,45 @@ let friends = ref(userStore.friends);
 
 let selectedFriends = ref([] as User[]);
 let filter = '';
-let sort = 'abc';
+let sortBy = 'abc';
 
 const handleFilterChange = async () => {
+  let value = friends.value;
   if (filter.length > 0) {
     console.debug('Filtering friends');
-    friends.value = userStore.friends.filter((friend) => {
+    value = userStore.friends.filter((friend) => {
       return (
         friend.personaname.toLowerCase().includes(filter.toLowerCase()) ||
         friend.realname?.toLowerCase().includes(filter.toLowerCase())
       );
     });
   } else {
-    friends.value = userStore.friends;
+    value = userStore.friends;
   }
-  if (sort === 'abc') {
+  if (sortBy === 'abc') {
     console.debug('Sorting alphabetically');
-    friends.value.sort((a, b) => {
+    value = sort(value).asc((friend) => friend.personaname);
+    /* value.sort((a, b) => {
       return a.personaname.localeCompare(b.personaname);
-    });
-  } else if (sort === 'online') {
+    }); */
+  } else if (sortBy === 'online') {
     console.debug('Sorting by last online');
-    friends.value.sort((a, b) => {
+    value = sort(value).desc((friend) => friend.lastlogoff);
+    /* value.sort((a, b) => {
       return b.lastlogoff - a.lastlogoff;
-    });
+    }); */
   }
   // sort if selected
   if (selectedFriends.value.length > 0) {
     console.debug('Sorting selected friends to top');
-    friends.value.sort((a, b) => {
+    value = sort(value).asc((friend) => {
+      if (selectedFriends.value.includes(friend)) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    /* value.sort((a, b) => {
       if (selectedFriends.value.includes(a)) {
         return -1;
       } else if (selectedFriends.value.includes(b)) {
@@ -45,8 +56,9 @@ const handleFilterChange = async () => {
       } else {
         return 0;
       }
-    });
+    }); */
   }
+  friends.value = value;
 };
 
 const handleSelect = async (friend: User) => {
@@ -62,7 +74,7 @@ handleFilterChange();
 
 const reset = async () => {
   filter = '';
-  sort = 'abc';
+  sortBy = 'abc';
   selectedFriends.value = [];
   handleFilterChange();
 };
@@ -106,7 +118,7 @@ const submit = async () => {};
         </div>
         <select
           class="select select-bordered select-sm w-full"
-          v-model="sort"
+          v-model="sortBy"
           @change="handleFilterChange"
         >
           <option value="abc">Alphabetically</option>
@@ -116,7 +128,7 @@ const submit = async () => {};
       <button class="btn btn-sm" @click="reset">Reset all</button>
     </section>
 
-    <section class="mb-6 flex flex-row flex-wrap gap-4">
+    <section class="mb-16 flex flex-row flex-wrap gap-4">
       <template v-for="friend in friends" :key="friend.steamid">
         <div
           class="indicator flex min-w-40 grow cursor-pointer flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition hover:bg-neutral-950"
@@ -131,7 +143,7 @@ const submit = async () => {};
             }"
             class="badge indicator-item"
           >
-            X
+            -
           </button>
           <!-- TODO: Remove from selection -->
           <div class="avatar">
@@ -148,7 +160,10 @@ const submit = async () => {};
     </section>
   </main>
   <transition-slide :offset="[0, 32]">
-    <footer class="container btm-nav bg-transparent" v-if="selectedFriends.length > 0">
+    <footer
+      class="container btm-nav bg-transparent bg-gradient-to-t from-base-100 to-transparent"
+      v-if="selectedFriends.length > 0"
+    >
       <button class="btn" @click="submit">
         Continue with {{ selectedFriends.length }} friends selected →
       </button>
