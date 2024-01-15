@@ -3,6 +3,8 @@ import { useUserStore } from '@/stores/user';
 import { sort } from 'fast-sort';
 import { ref } from 'vue';
 
+defineEmits(['reloadComponent']);
+
 const userStore = useUserStore();
 await userStore.fetchFriends();
 
@@ -30,6 +32,7 @@ const handleFilterChange = async () => {
     value = sort(value).asc((friend) => friend.personaname);
   } else if (sortBy === 'online') {
     console.debug('Sorting by last online');
+    // personastate = 1 means online
     value = sort(value).desc((friend) => friend.lastlogoff);
   }
   // sort if selected
@@ -69,8 +72,24 @@ const submit = async () => {};
 
 <template>
   <main class="container">
-    <h2 class="mb-4">Select friends you want to compare with</h2>
-    <section id="filters" class="mb-4 flex flex-row items-end justify-between gap-4">
+    <h2 class="">Select friends you want to compare with</h2>
+    <p class="mb-4 text-sm text-neutral-400">
+      Friend list may be not updated. If you wish to manually refresh, please click
+      <span
+        class="link"
+        @click="
+          () => {
+            userStore.resetFriends();
+            $emit('reloadComponent');
+          }
+        "
+        >here</span
+      >.
+    </p>
+    <section
+      id="filters"
+      class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
+    >
       <div class="join w-full grow items-end">
         <label class="form-control join-item w-full">
           <div class="label">
@@ -107,7 +126,7 @@ const submit = async () => {};
           @change="handleFilterChange"
         >
           <option value="abc">Alphabetically</option>
-          <option value="online">Last online</option>
+          <option value="online">Online status</option>
         </select>
       </label>
       <button class="btn btn-sm" @click="reset">Reset all</button>
@@ -116,7 +135,7 @@ const submit = async () => {};
     <section class="mb-16 flex flex-row flex-wrap gap-4">
       <template v-for="friend in friends" :key="friend.steamid">
         <div
-          class="indicator flex min-w-40 grow cursor-pointer flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition hover:bg-neutral-950"
+          class="indicator flex w-full cursor-pointer flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition hover:bg-neutral-950 sm:w-56 sm:grow md:grow-0"
           :class="{
             'bg-neutral-950': selectedFriends.includes(friend)
           }"
@@ -137,7 +156,7 @@ const submit = async () => {};
             </div>
           </div>
           <div class="select-none">
-            <h2 class="text-sm text-neutral-100">{{ friend.personaname }}</h2>
+            <h2 class="max-w-36 truncate text-sm text-neutral-100">{{ friend.personaname }}</h2>
             <p class="max-w-36 truncate text-xs text-gray-500">{{ friend.realname }}</p>
           </div>
         </div>

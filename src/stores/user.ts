@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 export const useUserStore = defineStore(
   'user',
@@ -47,6 +47,7 @@ export const useUserStore = defineStore(
       return new Promise<void>(async (resolve, reject) => {
         try {
           if (friends.value.length > 0) {
+            console.log("Don't fetch friends, already fetched recently")
             resolve();
             return;
           }
@@ -65,7 +66,11 @@ export const useUserStore = defineStore(
       });
     };
 
-    return { user, isLoggedIn, login, userGames, fetchUserGames, fetchFriends, friends };
+    const resetFriends = () => {
+      friends.value = [];
+    }
+
+    return { user, isLoggedIn, login, userGames, fetchUserGames, fetchFriends, friends, resetFriends };
   },
   {
     persist: true

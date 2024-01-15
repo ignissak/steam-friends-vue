@@ -16,9 +16,9 @@ const userStore = useUserStore();
     </header>
     <template v-if="userStore.isLoggedIn">
       <nav class="container mb-6 flex flex-row items-center justify-between gap-4">
-        <router-link to="/dashboard" class="btn btn-xs grow"> DASHBOARD </router-link>
-        <router-link to="/new" class="btn btn-xs grow">NEW COMPARISON</router-link>
-        <router-link to="/signout" class="btn btn-xs grow">SIGN OUT</router-link>
+        <router-link to="/dashboard" class="btn btn-xs grow uppercase">Dashboard</router-link>
+        <router-link to="/new" class="btn btn-xs grow uppercase">New comparison</router-link>
+        <router-link to="/signout" class="btn btn-xs grow uppercase">Sign out</router-link>
       </nav>
     </template>
 
