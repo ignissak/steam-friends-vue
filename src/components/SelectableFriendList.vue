@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
-import { ref } from 'vue';
 import { sort } from 'fast-sort';
+import { ref } from 'vue';
 
 const userStore = useUserStore();
 await userStore.fetchFriends();
@@ -28,15 +28,9 @@ const handleFilterChange = async () => {
   if (sortBy === 'abc') {
     console.debug('Sorting alphabetically');
     value = sort(value).asc((friend) => friend.personaname);
-    /* value.sort((a, b) => {
-      return a.personaname.localeCompare(b.personaname);
-    }); */
   } else if (sortBy === 'online') {
     console.debug('Sorting by last online');
     value = sort(value).desc((friend) => friend.lastlogoff);
-    /* value.sort((a, b) => {
-      return b.lastlogoff - a.lastlogoff;
-    }); */
   }
   // sort if selected
   if (selectedFriends.value.length > 0) {
@@ -48,15 +42,6 @@ const handleFilterChange = async () => {
         return 1;
       }
     });
-    /* value.sort((a, b) => {
-      if (selectedFriends.value.includes(a)) {
-        return -1;
-      } else if (selectedFriends.value.includes(b)) {
-        return 1;
-      } else {
-        return 0;
-      }
-    }); */
   }
   friends.value = value;
 };
