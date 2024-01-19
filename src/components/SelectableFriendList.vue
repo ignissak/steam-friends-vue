@@ -1,20 +1,28 @@
 <script setup lang="ts">
+import { useComparisonStore } from '@/stores/comparison';
 import { useUserStore } from '@/stores/user';
 import { useUtilsStore } from '@/stores/utils';
 import { sort } from 'fast-sort';
+import type { User } from 'steam';
+import { v4 as uuidv4 } from 'uuid';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const emit = defineEmits(['reloadComponent']);
 const userStore = useUserStore();
 await userStore.fetchFriends();
 
 const utilsStore = useUtilsStore();
+const comparisonStore = useComparisonStore();
+
+const router = useRouter();
+const MAX_SELECT = 9;
 
 let friends = ref(userStore.friends);
 
 let selectedFriends = ref([] as User[]);
 let filter = '';
-let sortBy = 'abc';
+let sortBy: 'abc' | 'online' = 'abc';
 
 const handleFilterChange = async () => {
   let value = friends.value;
@@ -58,6 +66,10 @@ const handleFilterChange = async () => {
 };
 
 const handleSelect = async (friend: User) => {
+  if (selectedFriends.value.length >= MAX_SELECT && !selectedFriends.value.includes(friend)) {
+    shakeFooter();
+    return;
+  }
   if (selectedFriends.value.includes(friend)) {
     selectedFriends.value = selectedFriends.value.filter((f) => f !== friend);
   } else {
@@ -86,13 +98,26 @@ const reloadComponent = async () => {
   }
 };
 
-const submit = async () => {};
+const submit = async () => {
+  comparisonStore.currentComparison.id = uuidv4();
+  comparisonStore.currentComparison.users = [userStore.user!!, ...selectedFriends.value];
+  router.push('/comparison/' + comparisonStore.currentComparison.id);
+};
+
+let shake = ref(false);
+const shakeFooter = () => {
+  if (shake.value) return;
+  shake.value = true;
+  setTimeout(() => {
+    shake.value = false;
+  }, 1000);
+};
 </script>
 
 <template>
   <main class="container">
     <div class="mb-4">
-      <h2 class="">Select friends you want to compare with</h2>
+      <h2 class="">Select friends you want to compare with (up to {{ MAX_SELECT }})</h2>
       <p
         class="text-sm text-neutral-400"
         v-if="Date.now() - utilsStore.lastReloadNewCompare > 60 * 10 * 1000"
@@ -150,9 +175,14 @@ const submit = async () => {};
     <section class="mb-16 flex flex-row flex-wrap gap-4">
       <template v-for="friend in friends" :key="friend.steamid">
         <div
-          class="indicator flex w-full cursor-pointer flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition hover:bg-neutral-950 sm:w-56 sm:grow md:grow-0"
+          class="indicator flex w-full flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition-all hover:bg-neutral-950 sm:w-56 sm:grow md:grow-0"
           :class="{
-            'bg-neutral-950': selectedFriends.includes(friend)
+            'bg-neutral-950': selectedFriends.includes(friend),
+            'cursor-pointer':
+              selectedFriends.length < MAX_SELECT ||
+              (selectedFriends.includes(friend) && selectedFriends.length >= MAX_SELECT),
+            'cursor-not-allowed opacity-50':
+              !selectedFriends.includes(friend) && selectedFriends.length >= MAX_SELECT
           }"
           @click="handleSelect(friend)"
         >
@@ -166,7 +196,10 @@ const submit = async () => {};
           </button>
           <!-- TODO: Remove from selection -->
           <div class="avatar indicator">
-            <span class="indicator-item h-2 w-2 rounded-full bg-green-600" v-if="friend.personastate === 1"></span>
+            <span
+              class="indicator-item h-2 w-2 rounded-full bg-green-600"
+              v-if="friend.personastate === 1"
+            ></span>
             <div class="w-12 rounded">
               <img :src="friend.avatarfull" alt="" />
             </div>
@@ -183,10 +216,41 @@ const submit = async () => {};
     <footer
       class="container btm-nav bg-transparent bg-gradient-to-t from-base-100 to-transparent"
       v-if="selectedFriends.length > 0"
+      :class="{ shake: shake }"
     >
       <button class="btn" @click="submit">
-        Continue with {{ selectedFriends.length }} friends selected →
+        Continue with {{ selectedFriends.length }}/{{ MAX_SELECT }} friends selected →
       </button>
     </footer>
   </transition-slide>
 </template>
+
+<style>
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+</style>

@@ -31,6 +31,22 @@ const router = createRouter({
       meta: {
         requiresAuth: true
       }
+    },
+    {
+      path: '/comparison/:id',
+      name: 'comparison',
+      component: () => import('../views/Comparison.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/404',
+      component: () => import('../views/NotFound.vue')
+    },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/404'
     }
   ]
 });

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { User } from 'steam';
 import { computed, ref, watch } from 'vue';
 
 export const useUserStore = defineStore(

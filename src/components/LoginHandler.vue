@@ -6,7 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore, type User } from '@/stores/user';
+import { useUserStore} from '@/stores/user';
+import type { User } from 'steam';
 import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
