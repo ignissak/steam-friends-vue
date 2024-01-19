@@ -33,9 +33,15 @@ const handleFilterChange = async () => {
     console.debug('Sorting alphabetically');
     value = sort(value).asc((friend) => friend.personaname);
   } else if (sortBy === 'online') {
-    console.debug('Sorting by last online');
-    // personastate = 1 means online
-    value = sort(value).desc((friend) => friend.lastlogoff);
+    console.debug('Sorting by online status');
+    // personastate = 1 means online, 0 = offline, other is treated as 0
+    value = sort(value).asc((friend) => {
+      if (friend.personastate === 1) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
   }
   // sort if selected
   if (selectedFriends.value.length > 0) {
@@ -159,7 +165,8 @@ const submit = async () => {};
             -
           </button>
           <!-- TODO: Remove from selection -->
-          <div class="avatar">
+          <div class="avatar indicator">
+            <span class="indicator-item h-2 w-2 rounded-full bg-green-600" v-if="friend.personastate === 1"></span>
             <div class="w-12 rounded">
               <img :src="friend.avatarfull" alt="" />
             </div>
