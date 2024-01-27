@@ -36,10 +36,10 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
         >
         <span v-else class="text-neutral-400 text-sm">{{ users.length }} of you owns this game!</span>
       </section>
-      <section class="avatar-group gap-1 rtl:space-x-reverse">
+      <section class="flex gap-1">
         <template v-for="user in users" :key="user.steamid">
-          <div class="avatar border-0">
-            <div class="w-6 sm:w-8 md:w-6">
+          <div class="avatar tooltip first:tooltip-right" :data-tip="user.personaname">
+            <div class="w-6 sm:w-8 md:w-6 rounded-full">
               <img :src="user.avatarfull" :alt="user.personaname" />
             </div></div
         ></template>

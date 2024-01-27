@@ -46,10 +46,10 @@ const onGamesCalculated = (entries: { game: Game; users: User[] }) => {
     <p class="text-xs text-neutral-700">{{ comparison?.id }}</p>
     <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:gap-4">
       <h2>Comparing libraries of {{ comparison?.users.length }} users</h2>
-      <div class="avatar-group gap-1 rtl:space-x-reverse">
+      <div class="flex gap-1">
         <template v-for="friend in comparison?.users" :key="friend.steamid">
-          <div class="avatar border-0">
-            <div class="w-6">
+          <div class="avatar tooltip first:tooltip-right" :data-tip="friend.personaname">
+            <div class="w-6 rounded-full">
               <img :src="friend.avatarfull" :alt="friend.personaname" />
             </div>
           </div>
