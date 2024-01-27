@@ -65,3 +65,8 @@ declare module 'steam' {
     data: any;
   };
 }
+
+declare module '@morev/vue-transitions' {
+  const VueTransitions: any;
+  export default VueTransitions;
+}

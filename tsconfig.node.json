@@ -12,6 +12,6 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node", "@morev/vue-transitions/types/volar"]
+    "types": ["node"]
   }
 }
