@@ -38,7 +38,7 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
       </section>
       <section class="flex gap-1">
         <template v-for="user in users" :key="user.steamid">
-          <div class="avatar tooltip first:tooltip-right" :data-tip="user.personaname">
+          <div class="avatar tooltip first:tooltip-right first:sm:tooltip-top" :data-tip="user.personaname">
             <div class="w-6 sm:w-8 md:w-6 rounded-full">
               <img :src="user.avatarfull" :alt="user.personaname" />
             </div></div
