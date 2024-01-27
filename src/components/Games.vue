@@ -8,6 +8,8 @@ const props = defineProps<{
   comparison: Comparison;
 }>();
 
+const emit = defineEmits(['onGamesCalculated']);
+
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
 const users = comparison.users;
 const allGames: Record<string, Game[]> = {};
@@ -42,69 +44,8 @@ for (const user of users) {
 const initialSortedGames = sort(Object.values(gamesInCommon)).desc((entry) => entry.users.length);
 const sortedGames = ref(initialSortedGames);
 
-console.log(sortedGames.value);
-
-/* const workerFunction = async (users: User[]): Promise<WorkerResponse> => {
-  
-  try {
-    // firstly, we need to get all games of all users
-    const allGames: Record<string, Game[]> = {};
-    for (const user of users) {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/steam/${user.steamid}/games`,
-        {
-          credentials: 'include'
-        }
-      );
-      const json = await response.json();
-      const games = json.data;
-      allGames[user.steamid] = games;
-    }
-    // now we need to find games that are in all users' libraries
-    const gamesInCommon: Game[] = [];
-    for (const game of allGames[users[0].steamid]) {
-      let inCommon = true;
-      for (const user of users) {
-        // match using appid
-        const found = allGames[user.steamid].find((g) => g.appid === game.appid);
-        if (!found) {
-          inCommon = false;
-          break;
-        }
-      }
-      if (inCommon) {
-        gamesInCommon.push(game);
-      }
-    }
-    // we found all games in common
-    return {
-      status: 'success',
-      data: gamesInCommon
-    };
-  } catch (e) {
-    return {
-      status: 'error',
-      data: (e as any).message
-    };
-  }
-};
-
-const workers = [];
-const returnedData = [];
-
-const init = async () => {
-  for (let i = 0; i < NUM_WORKERS; i++) {
-    console.log(split[i]);
-    const { workerFn, workerStatus, workerTerminate } = useWebWorkerFn(workerFunction);
-    console.log(workerStatus.value);
-
-    await nextTick();
-    console.log(1);
-    await workerFn(split[i]);
-
-    workers.push({ workerFn, workerStatus, workerTerminate });
-  }
-}; */
+// emit event to parent
+emit('onGamesCalculated', sortedGames.value);
 
 onMounted(async () => {
   // fetch every name that is missing for games

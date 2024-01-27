@@ -9,8 +9,5 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": [
-      "@morev/vue-transitions/types/volar"
-    ]
   }
 }

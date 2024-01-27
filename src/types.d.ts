@@ -56,8 +56,8 @@ declare module 'steam' {
     id: string;
     users: User[];
     games: Game[];
-    commonGames: Game[];
-    commonGamesCount: number;
+    calculated: { game: Game; users: User[] }[];
+    createdAt: Date;
   };
 
   export type WorkerResponse = {
