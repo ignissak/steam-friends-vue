@@ -98,7 +98,6 @@ const reloadComponent = async () => {
   }
 };
 
-
 const submit = async () => {
   try {
     comparisonStore.currentComparison.id = uuidv4();
@@ -106,7 +105,7 @@ const submit = async () => {
     router.push('/comparison/' + comparisonStore.currentComparison.id);
   } catch (e) {
     console.error(e);
-  } 
+  }
 };
 
 let shake = ref(false);

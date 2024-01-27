@@ -77,8 +77,19 @@ onMounted(async () => {
 });
 
 let nameFilter = '';
-let sortBy: 'count' | 'abc' = 'count';
 // TODO: User filter
+let userFilter = ref([] as string[]);
+
+const selectUser = async (user: User) => {
+  let value = userFilter.value;
+  if (value.includes(user.steamid)) {
+    value = value.filter((entry) => entry !== user.steamid);
+  } else {
+    value.push(user.steamid);
+  }
+  userFilter.value = value;
+  handleFilterChange();
+};
 
 const handleFilterChange = async () => {
   let value = sortedGames.value;
@@ -90,24 +101,38 @@ const handleFilterChange = async () => {
   } else {
     value = initialSortedGames;
   }
-  if (sortBy === 'abc') {
-    console.debug('Sorting alphabetically');
-    value = sort(value).asc((entry) => entry.game.name);
-  } else if (sortBy === 'count') {
-    if (nameFilter.length === 0) {
-      console.debug('Sorting by initial count');
-      value = initialSortedGames;
-    } else {
-      console.debug('Sorting by count');
-      value = sort(value).desc((entry) => entry.users.length);
+  if (nameFilter.length === 0) {
+    console.debug('Sorting by initial count');
+    value = initialSortedGames;
+  } else {
+    console.debug('Sorting by count');
+    value = sort(value).desc((entry) => entry.users.length);
+  }
+  // filter with user filter, using for loop
+  // only keep games that have all users in user filter
+  if (userFilter.value.length > 0) {
+    console.debug('Filtering games by user filter');
+    const filteredGames = [];
+    for (const entry of value) {
+      let hasAllUsers = true;
+      for (const user of userFilter.value) {
+        if (!entry.users.find((entry) => entry.steamid === user)) {
+          hasAllUsers = false;
+          break;
+        }
+      }
+      if (hasAllUsers) {
+        filteredGames.push(entry);
+      }
     }
+    value = filteredGames;
   }
   sortedGames.value = value;
 };
 
 const reset = async () => {
   nameFilter = '';
-  sortBy = 'count';
+  userFilter.value = [];
   handleFilterChange();
 };
 
@@ -147,22 +172,41 @@ handleFilterChange();
     </div>
     <div class="form-control w-full grow">
       <div class="label">
-        <span class="label-text">Sort by</span>
+        <span class="label-text">Filter by user</span>
       </div>
-      <select
-        v-model="sortBy"
-        class="select select-bordered select-sm w-full"
-        @change="handleFilterChange"
-      >
-        <option value="count">Amount of matches</option>
-        <option value="abc">Alphabetically</option>
-      </select>
+      <div class="flex items-center justify-between gap-1">
+        <template v-for="user in users" :key="user.steamid">
+          <button class="avatar tooltip" :data-tip="user.personaname" @click="selectUser(user)">
+            <div
+              class="w-8 rounded-full transition-all hover:grayscale-0"
+              :class="{
+                'border-2 border-blue-400 grayscale-0': userFilter.includes(user.steamid),
+                grayscale: !userFilter.includes(user.steamid)
+              }"
+            >
+              <img :src="user.avatarfull" :alt="user.personaname" />
+            </div>
+          </button>
+        </template>
+      </div>
     </div>
+    <button
+      @click="reset"
+      class="btn btn-outline btn-primary join-item btn-sm"
+      :disabled="nameFilter.length === 0 && userFilter.length === 0"
+    >
+      Reset all
+    </button>
   </section>
 
   <section class="mb-16 flex flex-row flex-wrap gap-4" id="games">
     <template v-for="entry in sortedGames" :key="entry.game.appid!!">
-      <GameCard :game="entry.game" :users="entry.users" :comparison="props.comparison" />
+      <GameCard
+        :game="entry.game"
+        :users="entry.users"
+        :comparison="props.comparison"
+        :filtered-users="userFilter"
+      />
     </template>
   </section>
 </template>
