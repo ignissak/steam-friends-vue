@@ -26,20 +26,14 @@ if (!comparison?.commonGames) {
 
 <template>
   <main class="container">
+    <p class="text-neutral-700 text-xs">{{ comparison?.id }}</p>
     <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:gap-4">
       <h2>Comparing libraries of {{ comparison?.users.length }} users</h2>
-      <div class="avatar-group -space-x-2 rtl:space-x-reverse">
-        <template v-for="friend in comparison!!.users.slice(0, 5)" :key="friend.steamid">
-          <div class="avatar">
+      <div class="avatar-group gap-1 rtl:space-x-reverse">
+        <template v-for="friend in comparison?.users" :key="friend.steamid">
+          <div class="avatar border-0">
             <div class="w-6">
               <img :src="friend.avatarfull" :alt="friend.personaname" />
-            </div>
-          </div>
-        </template>
-        <template v-if="comparison!!.users.length > 5">
-          <div class="avatar placeholder">
-            <div class="w-6 bg-neutral text-xs text-neutral-400">
-              <span>{{ comparison!!.users.length - 5 }}+</span>
             </div>
           </div>
         </template>
@@ -50,10 +44,23 @@ if (!comparison?.commonGames) {
         <Games :comparison="comparison!!" />
       </template>
       <template #fallback>
-        <div class="flex flex-col items-center justify-center">
-          <div class="loader"></div>
-          <p class="mt-4">Loading...</p>
-        </div>
+        <section class="mt-9">
+          <section class="mb-4 flex flex-col justify-between gap-1 md:flex-row md:gap-4">
+            <div class="grow">
+              <div class="suspense mb-1 h-5 w-20"></div>
+              <div class="suspense h-6 w-full"></div>
+            </div>
+            <div class="grow">
+              <div class="suspense mb-1 h-5 w-20"></div>
+              <div class="suspense h-6 w-full"></div>
+            </div>
+          </section>
+          <section class="flex flex-row flex-wrap gap-4">
+            <template v-for="i in 8" :key="i">
+              <div class="suspense h-40 w-80 grow"></div>
+            </template>
+          </section>
+        </section>
       </template>
     </Suspense>
   </main>

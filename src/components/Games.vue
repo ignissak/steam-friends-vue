@@ -1,43 +1,227 @@
 <script setup lang="ts">
-// TODO: https://cdn.akamai.steamstatic.com/steam/apps/431960/header.jpg
-import type { Comparison } from 'steam';
-import { toRaw } from 'vue';
-
-function splitArrayIntoChunks<T>(arr: T[], N: number): T[][] {
-  const chunkSize = Math.ceil(arr.length / N);
-  const result: T[][] = [];
-
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    const chunk = arr.slice(i, i + chunkSize);
-    result.push(chunk);
-  }
-
-  return result;
-}
+import { sort } from 'fast-sort';
+import type { Comparison, Game, User } from 'steam';
+import { onMounted, ref, toRaw } from 'vue';
+import GameCard from './GameCard.vue';
 
 const props = defineProps<{
   comparison: Comparison;
 }>();
 
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
-const NUM_WORKERS = 3; // TODO: thing about this number
+const users = comparison.users;
+const allGames: Record<string, Game[]> = {};
+for (const user of users) {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/steam/${user.steamid}/games`, {
+    credentials: 'include'
+  });
+  const json = await response.json();
+  const games = json.data;
+  allGames[user.steamid] = games;
+}
 
-// split many users into NUM_WORKERS chunks
-const split = splitArrayIntoChunks(comparison.users, NUM_WORKERS);
-console.log(split);
+// we want to find games that are in all users' libraries
+// also we want to track how many users have a certain game
+// map it as a dictionary where key is app id and value is an object containing count and game info
+const gamesInCommon: Record<string, { game: Game; users: User[] }> = {};
+for (const user of users) {
+  for (const game of allGames[user.steamid]) {
+    if (!game.appid) continue;
+    if (gamesInCommon[game.appid]) {
+      gamesInCommon[game.appid].users.push(user);
+    } else {
+      gamesInCommon[game.appid] = {
+        users: [user],
+        game
+      };
+    }
+  }
+}
 
-// send the users individually into the workers, wait until the worker is done before sending the next user
-const resolverListener = (event: MessageEvent) => {
-  console.log('Message from worker', event.data);
+// sort by count
+const initialSortedGames = sort(Object.values(gamesInCommon)).desc((entry) => entry.users.length);
+const sortedGames = ref(initialSortedGames);
+
+console.log(sortedGames.value);
+
+/* const workerFunction = async (users: User[]): Promise<WorkerResponse> => {
+  
+  try {
+    // firstly, we need to get all games of all users
+    const allGames: Record<string, Game[]> = {};
+    for (const user of users) {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/steam/${user.steamid}/games`,
+        {
+          credentials: 'include'
+        }
+      );
+      const json = await response.json();
+      const games = json.data;
+      allGames[user.steamid] = games;
+    }
+    // now we need to find games that are in all users' libraries
+    const gamesInCommon: Game[] = [];
+    for (const game of allGames[users[0].steamid]) {
+      let inCommon = true;
+      for (const user of users) {
+        // match using appid
+        const found = allGames[user.steamid].find((g) => g.appid === game.appid);
+        if (!found) {
+          inCommon = false;
+          break;
+        }
+      }
+      if (inCommon) {
+        gamesInCommon.push(game);
+      }
+    }
+    // we found all games in common
+    return {
+      status: 'success',
+      data: gamesInCommon
+    };
+  } catch (e) {
+    return {
+      status: 'error',
+      data: (e as any).message
+    };
+  }
 };
 
-const workers: Worker[] = [];
-for (let i = 0; i < NUM_WORKERS; i++) {
-  const worker = new Worker('./scripts/games.worker.ts');
-  worker.addEventListener('message', resolverListener);
-  worker.postMessage(split[i]);
-  workers.push(worker);
-}
+const workers = [];
+const returnedData = [];
+
+const init = async () => {
+  for (let i = 0; i < NUM_WORKERS; i++) {
+    console.log(split[i]);
+    const { workerFn, workerStatus, workerTerminate } = useWebWorkerFn(workerFunction);
+    console.log(workerStatus.value);
+
+    await nextTick();
+    console.log(1);
+    await workerFn(split[i]);
+
+    workers.push({ workerFn, workerStatus, workerTerminate });
+  }
+}; */
+
+onMounted(async () => {
+  // fetch every name that is missing for games
+  const appIds = [];
+  for (const entry of sortedGames.value) {
+    if (entry.game.name) continue;
+    appIds.push(entry.game.appid);
+  }
+  if (appIds.length === 0) return;
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/steam/games`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ appIds, liveData: true })
+  });
+  const json = await response.json();
+
+  // update game names
+  for (const entry of sortedGames.value) {
+    if (entry.game.name) continue;
+    if (json.data[entry.game.appid!!] && json.data[entry.game.appid!!].name) {
+      entry.game.name = json.data[entry.game.appid!!].name;
+    } else {
+      entry.game.name = 'Unknown';
+    }
+  }
+});
+
+let nameFilter = '';
+let sortBy: 'count' | 'abc' = 'count';
+// TODO: User filter
+
+const handleFilterChange = async () => {
+  let value = sortedGames.value;
+  if (nameFilter.length > 0) {
+    console.debug('Filtering games', nameFilter);
+    value = initialSortedGames.filter((entry) => {
+      return entry.game.name?.toLowerCase().includes(nameFilter.toLowerCase());
+    });
+  } else {
+    value = initialSortedGames;
+  }
+  if (sortBy === 'abc') {
+    console.debug('Sorting alphabetically');
+    value = sort(value).asc((entry) => entry.game.name);
+  } else if (sortBy === 'count') {
+    if (nameFilter.length === 0) {
+      console.debug('Sorting by initial count');
+      value = initialSortedGames;
+    } else {
+      console.debug('Sorting by count');
+      value = sort(value).desc((entry) => entry.users.length);
+    }
+  }
+  sortedGames.value = value;
+};
+
+const reset = async () => {
+  nameFilter = '';
+  sortBy = 'count';
+  handleFilterChange();
+};
+
+handleFilterChange();
 </script>
 
-<template></template>
+<template>
+  <section
+    id="filters"
+    class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
+  >
+    <div class="join w-full grow items-end">
+      <label class="form-control join-item w-full">
+        <div class="label">
+          <span class="label-text">Game name</span>
+        </div>
+        <input
+          type="text"
+          v-model="nameFilter"
+          placeholder="Type here"
+          class="input input-bordered input-sm w-full"
+          @input="handleFilterChange"
+        />
+      </label>
+      <button
+        @click="
+          () => {
+            nameFilter = '';
+            handleFilterChange();
+          }
+        "
+        class="btn btn-outline btn-primary join-item btn-sm"
+        :disabled="nameFilter.length === 0"
+      >
+        Clear
+      </button>
+    </div>
+    <div class="form-control w-full grow">
+      <div class="label">
+        <span class="label-text">Sort by</span>
+      </div>
+      <select
+        v-model="sortBy"
+        class="select select-bordered select-sm w-full"
+        @change="handleFilterChange"
+      >
+        <option value="count">Amount of matches</option>
+        <option value="abc">Alphabetically</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="mb-16 flex flex-row flex-wrap gap-4" id="games">
+    <template v-for="entry in sortedGames" :key="entry.game.appid!!">
+      <GameCard :game="entry.game" :users="entry.users" :comparison="props.comparison" />
+    </template>
+  </section>
+</template>

@@ -130,6 +130,7 @@ const shakeFooter = () => {
       id="filters"
       class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
     >
+      <!-- Name filter -->
       <div class="join w-full grow items-end">
         <label class="form-control join-item w-full">
           <div class="label">
@@ -156,6 +157,7 @@ const shakeFooter = () => {
           Clear
         </button>
       </div>
+      <!-- Sort by-->
       <label class="form-control w-full grow">
         <div class="label">
           <span class="label-text">Sort by</span>
@@ -169,6 +171,7 @@ const shakeFooter = () => {
           <option value="online">Online status</option>
         </select>
       </label>
+      <!-- Reset button -->
       <button class="btn btn-sm" @click="reset">Reset all</button>
     </section>
 

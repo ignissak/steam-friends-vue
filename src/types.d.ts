@@ -15,14 +15,15 @@ declare module 'steam' {
     primaryclanid: string;
     timecreated: number;
     personastateflags: number;
-  }
-  
-  export type Game = {
-    name: string;
-    steam_appid: number;
-    is_free: boolean;
-    header_image: string;
-    price_overview: {
+  };
+
+  export interface Game {
+    name?: string;
+    steam_appid?: number;
+    appid?: number;
+    is_free?: boolean;
+    header_image?: string;
+    price_overview?: {
       currency: string;
       initial: number;
       final: number;
@@ -30,27 +31,37 @@ declare module 'steam' {
       initial_formatted: string;
       final_formatted: string;
     };
-    platforms: {
+    platforms?: {
       windows: boolean;
       mac: boolean;
       linux: boolean;
     };
-    categories: {
+    categories?: {
       id: number;
       description: string;
     }[];
-    genres: {
+    genres?: {
       id: string;
       description: string;
     }[];
-    
+    playtime_forever?: number;
+    playtime_windows_forever?: number;
+    playtime_mac_forever?: number;
+    playtime_linux_forever?: number;
+    rtime_last_played?: number;
+    playtime_disconnected?: number;
   }
-  
+
   export type Comparison = {
     id: string;
     users: User[];
     games: Game[];
     commonGames: Game[];
     commonGamesCount: number;
-  }
+  };
+
+  export type WorkerResponse = {
+    status: 'success' | 'error';
+    data: any;
+  };
 }
