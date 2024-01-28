@@ -14,10 +14,17 @@ const comparison = toRaw(props.comparison); // we don't need this to be reactive
 const users = comparison.users;
 const allGames: Record<string, Game[]> = {};
 for (const user of users) {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`, {
-    credentials: 'include'
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`,
+    {
+      credentials: 'include'
+    }
+  );
   const json = await response.json();
+  if (response.status !== 200) {
+    console.error('User not found!', json);
+    continue;
+  }
   const games = json.data;
   allGames[user.steamid] = games;
 }
