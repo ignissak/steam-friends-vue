@@ -13,7 +13,7 @@ import { useRouter } from 'vue-router';
 const userStore = useUserStore();
 const router = useRouter();
 
-fetch(`${import.meta.env.VITE_API_BASE_URL}/api`, {
+fetch(`${import.meta.env.VITE_API_BASE_URL}/api/me`, {
   credentials: 'include',
   redirect: 'manual'
 }).then(async (res) => {
