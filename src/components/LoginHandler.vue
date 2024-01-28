@@ -1,19 +1,19 @@
 <template>
-  <main class="container flex items-center justify-center flex-grow">
+  <main class="container flex flex-grow items-center justify-center">
     <span class="loading loading-spinner loading-md mr-4"></span>
     <span>Logging in...</span>
   </main>
 </template>
 
 <script setup lang="ts">
-import { useUserStore} from '@/stores/user';
+import { useUserStore } from '@/stores/user';
 import type { User } from 'steam';
 import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const router = useRouter();
 
-fetch(`${import.meta.env.VITE_API_BASE_URL}/`, {
+fetch(`${import.meta.env.VITE_API_BASE_URL}/api`, {
   credentials: 'include',
   redirect: 'manual'
 }).then(async (res) => {
