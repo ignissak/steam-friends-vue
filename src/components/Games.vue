@@ -14,7 +14,7 @@ const comparison = toRaw(props.comparison); // we don't need this to be reactive
 const users = comparison.users;
 const allGames: Record<string, Game[]> = {};
 for (const user of users) {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/steam/${user.steamid}/games`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`, {
     credentials: 'include'
   });
   const json = await response.json();
@@ -55,7 +55,7 @@ onMounted(async () => {
     appIds.push(entry.game.appid);
   }
   if (appIds.length === 0) return;
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/steam/games`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/games`, {
     method: 'POST',
     credentials: 'include',
     headers: {

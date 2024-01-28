@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import type { User } from 'steam';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 export const useUserStore = defineStore(
   'user',
@@ -30,7 +30,7 @@ export const useUserStore = defineStore(
             return;
           }
           const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/steam/${user.value?.steamid}/games`,
+            `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.value?.steamid}/games`,
             {
               credentials: 'include'
             }
@@ -53,7 +53,7 @@ export const useUserStore = defineStore(
             return;
           }
           const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/steam/${user.value?.steamid}/friends`,
+            `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.value?.steamid}/friends`,
             {
               credentials: 'include'
             }
