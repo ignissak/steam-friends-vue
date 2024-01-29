@@ -13,7 +13,7 @@ const emit = defineEmits(['onGamesCalculated']);
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
 let initialSortedGames: { game: Game; users: User[] }[] = [];
 const users = comparison.users;
-if (!comparison.calculated) {
+if (comparison.calculated.length === 0) {
   const allGames: Record<string, Game[]> = {};
   for (const user of users) {
     try {

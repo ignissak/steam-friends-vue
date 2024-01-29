@@ -103,6 +103,7 @@ const submit = async () => {
     comparisonStore.currentComparison.id = uuidv4();
     comparisonStore.currentComparison.users = [userStore.user!!, ...selectedFriends.value];
     comparisonStore.currentComparison.createdAt = Date.now();
+    comparisonStore.currentComparison.calculated = [];
     router.push('/comparison/' + comparisonStore.currentComparison.id);
   } catch (e) {
     console.error(e);
