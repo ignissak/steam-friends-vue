@@ -11,49 +11,54 @@ const props = defineProps<{
 const emit = defineEmits(['onGamesCalculated']);
 
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
+let initialSortedGames: { game: Game; users: User[] }[] = [];
 const users = comparison.users;
-const allGames: Record<string, Game[]> = {};
-for (const user of users) {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`,
-      {
-        credentials: 'include'
-      }
-    );
-    const json = await response.json();
-    const games = json.data;
-    allGames[user.steamid] = games;
-  } catch (e) {
-    console.error('User not found?', e);
-    allGames[user.steamid] = [];
-  }
-}
-
-// we want to find games that are in all users' libraries
-// also we want to track how many users have a certain game
-// map it as a dictionary where key is app id and value is an object containing count and game info
-const gamesInCommon: Record<string, { game: Game; users: User[] }> = {};
-for (const user of users) {
-  if (!allGames[user.steamid]) {
-    console.warn('No games for user', user.steamid);
-    continue;
-  }
-  for (const game of allGames[user.steamid]) {
-    if (!game.appid) continue;
-    if (gamesInCommon[game.appid]) {
-      gamesInCommon[game.appid].users.push(user);
-    } else {
-      gamesInCommon[game.appid] = {
-        users: [user],
-        game
-      };
+if (!comparison.calculated) {
+  const allGames: Record<string, Game[]> = {};
+  for (const user of users) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`,
+        {
+          credentials: 'include'
+        }
+      );
+      const json = await response.json();
+      const games = json.data;
+      allGames[user.steamid] = games;
+    } catch (e) {
+      console.error('User not found?', e);
+      allGames[user.steamid] = [];
     }
   }
-}
 
-// sort by count
-const initialSortedGames = sort(Object.values(gamesInCommon)).desc((entry) => entry.users.length);
+  // we want to find games that are in all users' libraries
+  // also we want to track how many users have a certain game
+  // map it as a dictionary where key is app id and value is an object containing count and game info
+  const gamesInCommon: Record<string, { game: Game; users: User[] }> = {};
+  for (const user of users) {
+    if (!allGames[user.steamid]) {
+      console.warn('No games for user', user.steamid);
+      continue;
+    }
+    for (const game of allGames[user.steamid]) {
+      if (!game.appid) continue;
+      if (gamesInCommon[game.appid]) {
+        gamesInCommon[game.appid].users.push(user);
+      } else {
+        gamesInCommon[game.appid] = {
+          users: [user],
+          game
+        };
+      }
+    }
+  }
+
+  // sort by count
+  initialSortedGames = sort(Object.values(gamesInCommon)).desc((entry) => entry.users.length);
+} else {
+  initialSortedGames = comparison.calculated;
+}
 const sortedGames = ref(initialSortedGames);
 
 // emit event to parent
@@ -196,7 +201,7 @@ handleFilterChange();
                 grayscale: !userFilter.includes(user.steamid)
               }"
             >
-              <img :src="user.avatarfull" :alt="user.personaname" />
+              <img :src="user.avatarmedium" :alt="user.personaname" />
             </div>
           </button>
         </template>

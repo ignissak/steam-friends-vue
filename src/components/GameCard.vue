@@ -55,7 +55,7 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
             :data-tip="user.personaname"
           >
             <div class="w-6 rounded-full">
-              <img :src="user.avatarfull" :alt="user.personaname" />
+              <img :src="user.avatarmedium" :alt="user.personaname" />
             </div></div
         ></template>
       </section>

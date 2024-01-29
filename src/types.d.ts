@@ -55,9 +55,8 @@ declare module 'steam' {
   export type Comparison = {
     id: string;
     users: User[];
-    games: Game[];
     calculated: { game: Game; users: User[] }[];
-    createdAt: Date;
+    createdAt: number;
   };
 
   export type WorkerResponse = {
