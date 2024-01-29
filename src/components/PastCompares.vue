@@ -68,6 +68,19 @@ const calculateMatchRate = (
           </footer>
         </router-link>
       </template>
+      <template v-if="comparisonStore.pastComparisons.length === 0">
+        <router-link
+          to="/new"
+          class="group flex h-44 w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-900 transition-all hover:border-neutral-600"
+        >
+          <h3 class="font-medium text-neutral-900 transition-all group-hover:text-neutral-100">
+            You don't have any comparisons yet!
+          </h3>
+          <p class="text-sm text-neutral-900 transition-all group-hover:text-neutral-100">
+            Click here to begin a new comparison.
+          </p>
+        </router-link>
+      </template>
     </div>
   </main>
 </template>
