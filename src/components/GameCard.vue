@@ -41,7 +41,7 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
           >All of you own this game!</span
         >
         <span v-else class="text-sm text-neutral-400"
-          >{{ users.length }} of you owns this game!</span
+          >{{ users.length }}/{{ comparison.users.length }} of you owns this game!</span
         >
       </section>
       <section class="flex gap-1">

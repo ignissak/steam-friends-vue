@@ -26,6 +26,7 @@ for (const user of users) {
     allGames[user.steamid] = games;
   } catch (e) {
     console.error('User not found?', e);
+    allGames[user.steamid] = [];
   }
 }
 
@@ -34,6 +35,10 @@ for (const user of users) {
 // map it as a dictionary where key is app id and value is an object containing count and game info
 const gamesInCommon: Record<string, { game: Game; users: User[] }> = {};
 for (const user of users) {
+  if (!allGames[user.steamid]) {
+    console.warn('No games for user', user.steamid);
+    continue;
+  }
   for (const game of allGames[user.steamid]) {
     if (!game.appid) continue;
     if (gamesInCommon[game.appid]) {
@@ -177,11 +182,11 @@ handleFilterChange();
         Clear
       </button>
     </div>
-    <div class="form-control w-full grow">
+    <div class="form-control grow">
       <div class="label">
         <span class="label-text">Filter by user</span>
       </div>
-      <div class="flex items-center justify-between gap-1">
+      <div class="flex items-center gap-1">
         <template v-for="user in users" :key="user.steamid">
           <button class="avatar tooltip" :data-tip="user.personaname" @click="selectUser(user)">
             <div
@@ -199,7 +204,7 @@ handleFilterChange();
     </div>
     <button
       @click="reset"
-      class="btn btn-outline btn-primary join-item btn-sm"
+      class="btn btn-outline btn-primary join-item btn-sm grow"
       :disabled="nameFilter.length === 0 && userFilter.length === 0"
     >
       Reset all
