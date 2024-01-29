@@ -37,7 +37,7 @@ const calculateMatchRate = (
       <template v-for="comparison in comparisonStore.pastComparisons" :key="comparison.id">
         <router-link
           :to="`/comparison/${comparison.id}`"
-          class="card flex w-full gap-4 bg-neutral-950 p-4"
+          class="card flex w-full gap-4 bg-neutral-950 p-4 transition-all hover:scale-105"
         >
           <header>
             <p class="text-xs text-neutral-700">{{ comparison.id }}</p>
