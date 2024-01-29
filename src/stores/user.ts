@@ -48,7 +48,7 @@ export const useUserStore = defineStore(
       return new Promise<void>(async (resolve, reject) => {
         try {
           if (friends.value.length > 0) {
-            console.log("Don't fetch friends, already fetched recently")
+            console.log("Don't fetch friends, already fetched recently");
             resolve();
             return;
           }
@@ -69,9 +69,26 @@ export const useUserStore = defineStore(
 
     const resetFriends = () => {
       friends.value = [];
-    }
+    };
 
-    return { user, isLoggedIn, login, userGames, fetchUserGames, fetchFriends, friends, resetFriends };
+    const signOut = () => {
+      user.value = null;
+      friends.value = [];
+      userGames.value = [];
+      console.log('Signed out');
+    };
+
+    return {
+      user,
+      isLoggedIn,
+      login,
+      userGames,
+      fetchUserGames,
+      fetchFriends,
+      friends,
+      resetFriends,
+      signOut
+    };
   },
   {
     persist: true

@@ -41,6 +41,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/signout',
+      name: 'signout',
+      component: () => import('../views/SignOut.vue'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
       path: '/404',
       component: () => import('../views/NotFound.vue')
     },
@@ -58,7 +66,7 @@ router.beforeEach((to, from, next) => {
     if (userStore.isLoggedIn) {
       next();
     } else {
-      userStore.$reset();
+      userStore.signOut();
       next('/login');
     }
   } else {

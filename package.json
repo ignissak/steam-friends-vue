@@ -15,12 +15,14 @@
   "dependencies": {
     "@morev/vue-transitions": "^2.3.6",
     "@vueuse/core": "^10.7.2",
+    "@vueuse/integrations": "^10.7.2",
     "@vueuse/shared": "^10.7.2",
     "axios": "^1.6.7",
     "fast-sort": "^3.4.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "universal-cookie": "^6",
     "uuid": "^9.0.1",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
