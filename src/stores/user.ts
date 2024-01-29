@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import type { User } from 'steam';
+import type { Comparison, User } from 'steam';
 import { computed, ref } from 'vue';
+import { useComparisonStore } from './comparison';
 
 export const useUserStore = defineStore(
   'user',
@@ -45,6 +46,7 @@ export const useUserStore = defineStore(
     };
 
     const fetchFriends = (): Promise<void> => {
+      // TODO: User can have a private friend list
       return new Promise<void>(async (resolve, reject) => {
         try {
           if (friends.value.length > 0) {
@@ -52,16 +54,21 @@ export const useUserStore = defineStore(
             resolve();
             return;
           }
-          const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.value?.steamid}/friends`,
-            {
-              credentials: 'include'
-            }
-          );
-          const json = await response.json();
-          friends.value = json.data;
-          resolve();
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.value?.steamid}/friends`, {
+            credentials: 'include'
+          })
+            .then(async (response) => {
+              if (!response.ok) reject(response.statusText);
+              const json = await response.json();
+              friends.value = json.data;
+              resolve();
+            })
+            .catch((e) => {
+              console.log('Error fetching friends', e);
+              reject(e);
+            });
         } catch (error) {
+          console.log('Error fetching friends', error);
           reject(error);
         }
       });
@@ -75,6 +82,10 @@ export const useUserStore = defineStore(
       user.value = null;
       friends.value = [];
       userGames.value = [];
+
+      const comparisonStore = useComparisonStore();
+      comparisonStore.currentComparison = {} as Comparison;
+      
       console.log('Signed out');
     };
 

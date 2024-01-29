@@ -9,9 +9,13 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const emit = defineEmits(['reloadComponent']);
+let error = ref('');
 const userStore = useUserStore();
-await userStore.fetchFriends();
-
+try {
+  await userStore.fetchFriends();
+} catch (e) {
+  error.value = 'Failed to fetch friends. Check if your friend list is public and try again later.';
+}
 const utilsStore = useUtilsStore();
 const comparisonStore = useComparisonStore();
 
@@ -180,6 +184,8 @@ const shakeFooter = () => {
       <!-- Reset button -->
       <button class="btn btn-sm" @click="reset">Reset all</button>
     </section>
+
+    <p v-if="error" class="rounded-lg bg-red-500 py-2 text-center text-neutral-100">{{ error }}</p>
 
     <section class="mb-16 flex flex-row flex-wrap gap-4">
       <template v-for="friend in friends" :key="friend.steamid">
