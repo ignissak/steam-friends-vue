@@ -9,7 +9,7 @@ const userStore = useUserStore();
     <header class="container mb-2 mt-6 flex flex-row items-center justify-between">
       <div>
         <h1>Steam Friends Library Compare</h1>
-        <span class="text-sm text-neutral-700 block sm:inline">version 1.0.0</span>
+        <span class="text-sm text-neutral-700 block sm:inline">version 1.0.1</span>
       </div>
     </header>
     <template v-if="userStore.isLoggedIn">
