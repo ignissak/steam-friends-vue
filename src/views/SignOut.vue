@@ -6,8 +6,9 @@ import { useRouter } from 'vue-router';
 const userStore = useUserStore();
 const useRoute = useRouter();
 
-const cookies = useCookies(['steam-session']);
-cookies.remove('steam-session');
+console.log('Signing out');
+const { remove } = useCookies(['steam-session']);
+remove('steam-session', { expires: new Date(0) });
 
 userStore.signOut();
 useRoute.push('/');
