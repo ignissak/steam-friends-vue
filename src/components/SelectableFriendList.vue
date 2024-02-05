@@ -5,16 +5,19 @@ import { useUtilsStore } from '@/stores/utils';
 import { sort } from 'fast-sort';
 import type { User } from 'steam';
 import { v4 as uuidv4 } from 'uuid';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const emit = defineEmits(['reloadComponent']);
+const progress = inject('progress') as any;
 let error = ref('');
 const userStore = useUserStore();
 try {
   await userStore.fetchFriends();
+  progress.increase(50);
 } catch (e) {
   error.value = 'Failed to fetch friends. Check if your friend list is public and try again later.';
+  progress.fail();
 }
 const utilsStore = useUtilsStore();
 const comparisonStore = useComparisonStore();
@@ -82,7 +85,9 @@ const handleSelect = async (friend: User) => {
   handleFilterChange();
 };
 
-handleFilterChange();
+handleFilterChange().then(() => {
+  progress.finish();
+});
 
 const reset = async () => {
   filter = '';

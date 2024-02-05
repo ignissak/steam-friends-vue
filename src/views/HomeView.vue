@@ -1,10 +1,13 @@
 <script setup lang="ts">
-  
+import { inject } from 'vue';
+
+const progress = inject('progress') as any;
+progress.finish();
 </script>
 
 <template>
   <main class="container">
-    <p class="text-neutral-400 mb-4">
+    <p class="mb-4 text-neutral-400">
       Discover shared gaming horizons with Steam Friends Library Compare. Seamlessly connect,
       compare collections, and elevate your gaming adventures with friends effortlessly!
     </p>

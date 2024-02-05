@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort';
 import type { Comparison, Game, User } from 'steam';
-import { onMounted, ref, toRaw } from 'vue';
+import { inject, onMounted, ref, toRaw } from 'vue';
 import GameCard from './GameCard.vue';
 
 const props = defineProps<{
@@ -9,6 +9,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['onGamesCalculated']);
+
+const progress = inject('progress') as any;
 
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
 let initialSortedGames: { game: Game; users: User[] }[] = [];
@@ -26,6 +28,8 @@ if (comparison.calculated.length === 0) {
       const json = await response.json();
       const games = json.data;
       allGames[user.steamid] = games;
+      // user fetching section should take maximum of 25% of progress
+      progress.increase(25 / users.length);
     } catch (e) {
       console.error('User not found?', e);
       allGames[user.steamid] = [];
@@ -52,6 +56,7 @@ if (comparison.calculated.length === 0) {
         };
       }
     }
+    progress.increase(25 / users.length);
   }
 
   // sort by count
@@ -71,25 +76,34 @@ onMounted(async () => {
     if (entry.game.name) continue;
     appIds.push(entry.game.appid);
   }
-  if (appIds.length === 0) return;
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/games`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ appIds, liveData: true })
-  });
-  const json = await response.json();
+  if (appIds.length === 0) {
+    progress.finish();
+    return;
+  }
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/steam/games`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ appIds, liveData: true })
+    });
+    const json = await response.json();
 
-  // update game names
-  for (const entry of sortedGames.value) {
-    if (entry.game.name) continue;
-    if (json.data[entry.game.appid!!] && json.data[entry.game.appid!!].name) {
-      entry.game.name = json.data[entry.game.appid!!].name;
-    } else {
-      entry.game.name = 'Unknown';
+    // update game names
+    for (const entry of sortedGames.value) {
+      if (entry.game.name) continue;
+      if (json.data[entry.game.appid!!] && json.data[entry.game.appid!!].name) {
+        entry.game.name = json.data[entry.game.appid!!].name;
+      } else {
+        entry.game.name = 'Unknown';
+      }
     }
+    progress.finish();
+  } catch (e) {
+    console.error('Failed to fetch game names', e);
+    progress.finish();
   }
 });
 

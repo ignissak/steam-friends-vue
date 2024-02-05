@@ -69,3 +69,8 @@ declare module '@morev/vue-transitions' {
   const VueTransitions: any;
   export default VueTransitions;
 }
+
+declare module '@aacassandra/vue3-progressbar' {
+  const VueProgressBar: any;
+  export default VueProgressBar;
+}

@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import SelectableFriendList from '@/components/SelectableFriendList.vue';
-import { ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 
 let id = ref(0);
+const progress = inject('progress') as any;
+progress.start();
+
+watch(id, () => {
+  progress.start();
+});
 </script>
 
 <template>

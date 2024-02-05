@@ -2,12 +2,16 @@
 import Games from '@/components/Games.vue';
 import { useComparisonStore } from '@/stores/comparison';
 import type { Game, User } from 'steam';
+import { inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const comparisonStore = useComparisonStore();
 const route = useRoute();
 const router = useRouter();
 const id = route.params.id;
+
+const progress = inject('progress') as any;
+progress.start();
 
 let comparison = comparisonStore.pastComparisons.find((comparison) => comparison.id === id);
 if (!comparison) {
@@ -44,7 +48,7 @@ const onGamesCalculated = (entries: { game: Game; users: User[] }[]) => {
 <template>
   <main class="container">
     <p class="text-xs text-neutral-700">{{ comparison?.id }}</p>
-    <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:gap-4 justify-between">
+    <div class="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:gap-4">
       <h2>Comparing libraries of {{ comparison?.users.length }} users</h2>
     </div>
     <Suspense>

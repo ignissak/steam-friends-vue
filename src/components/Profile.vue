@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
+import { inject } from 'vue';
 
 const userStore = useUserStore();
 await userStore.fetchUserGames();
+
+(inject('progress') as any).finish();
 </script>
 
 <template>

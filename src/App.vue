@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { getCurrentInstance, provide } from 'vue';
 import { RouterView } from 'vue-router';
 import { useUserStore } from './stores/user';
 const userStore = useUserStore();
+
+const internalInstance = getCurrentInstance();
+const progress: any = internalInstance!!.appContext.config.globalProperties.$Progress;
+
+provide('progress', progress);
+
+progress.start();
 </script>
 
 <template>
@@ -21,5 +29,6 @@ const userStore = useUserStore();
     </template>
 
     <RouterView />
+    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
