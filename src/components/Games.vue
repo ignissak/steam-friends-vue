@@ -159,7 +159,7 @@ handleFilterChange();
 <template>
   <section
     id="filters"
-    class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
+    class="mb-4 flex flex-col items-center justify-between gap-1 sm:flex-row sm:items-end sm:gap-4"
   >
     <div class="join w-full grow items-end">
       <label class="form-control join-item w-full">
@@ -187,7 +187,7 @@ handleFilterChange();
         Clear
       </button>
     </div>
-    <div class="form-control grow">
+    <div class="form-control w-full grow sm:w-auto">
       <div class="label">
         <span class="label-text">Filter by user</span>
       </div>
@@ -209,7 +209,7 @@ handleFilterChange();
     </div>
     <button
       @click="reset"
-      class="btn btn-outline btn-primary join-item btn-sm grow"
+      class="btn btn-outline btn-primary join-item btn-sm w-full grow sm:w-auto"
       :disabled="nameFilter.length === 0 && userFilter.length === 0"
     >
       Reset all
