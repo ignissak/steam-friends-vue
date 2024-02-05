@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@aacassandra/vue3-progressbar':
+    specifier: ^1.0.3
+    version: 1.0.3(typescript@5.3.3)
   '@morev/vue-transitions':
     specifier: ^2.3.6
     version: 2.3.6(vue@3.4.15)
@@ -105,6 +108,15 @@ devDependencies:
     version: 1.8.27(typescript@5.3.3)
 
 packages:
+
+  /@aacassandra/vue3-progressbar@1.0.3(typescript@5.3.3):
+    resolution: {integrity: sha512-e4SlgYwXiNABJbHYOChs3aSiCyR+1D6WAjWR1zo3vCs/9k6Vjj2GIPXWNJA/YP4RhlQS4eSC3RtCPC95CfAEbw==}
+    dependencies:
+      core-js: 3.35.1
+      vue: 3.4.15(typescript@5.3.3)
+    transitivePeerDependencies:
+      - typescript
+    dev: false
 
   /@aashutoshrathi/word-wrap@1.2.6:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
@@ -1519,6 +1531,11 @@ packages:
   /cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /core-js@3.35.1:
+    resolution: {integrity: sha512-IgdsbxNyMskrTFxa9lWHyMwAJU5gXOPP+1yO+K59d50VLVAIDAbs7gIv705KzALModfK3ZrSZTPNpC0PQgIZuw==}
+    requiresBuild: true
     dev: false
 
   /cross-spawn@7.0.3:

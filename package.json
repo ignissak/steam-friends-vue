@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@aacassandra/vue3-progressbar": "^1.0.3",
     "@morev/vue-transitions": "^2.3.6",
     "@vueuse/core": "^10.7.2",
     "@vueuse/integrations": "^10.7.2",
