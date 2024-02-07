@@ -85,7 +85,7 @@ export const useUserStore = defineStore(
 
       const comparisonStore = useComparisonStore();
       comparisonStore.currentComparison = {} as Comparison;
-      
+
       console.log('Signed out');
     };
 

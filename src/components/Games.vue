@@ -201,7 +201,7 @@ handleFilterChange();
         Clear
       </button>
     </div>
-    <div class="form-control w-full grow sm:w-auto mb-3 sm:mb-auto">
+    <div class="form-control mb-3 w-full grow sm:mb-auto sm:w-auto">
       <div class="label">
         <span class="label-text">Filter by user</span>
       </div>
