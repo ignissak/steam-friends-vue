@@ -1,8 +1,16 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores/user';
 import { inject } from 'vue';
+import { useRouter } from 'vue-router';
 
 const progress = inject('progress') as any;
 progress.finish();
+
+const userStore = useUserStore();
+const router = useRouter();
+if (userStore.isLoggedIn) {
+  router.push('/dashboard');
+}
 </script>
 
 <template>
