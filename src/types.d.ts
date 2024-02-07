@@ -58,11 +58,6 @@ declare module 'steam' {
     calculated: { game: Game; users: User[] }[];
     createdAt: number;
   };
-
-  export type WorkerResponse = {
-    status: 'success' | 'error';
-    data: any;
-  };
 }
 
 declare module '@morev/vue-transitions' {
