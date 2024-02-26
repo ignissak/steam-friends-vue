@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort';
 import type { Comparison, Game, User } from 'steam';
+/** @ts-ignore */
+import VLazyImage from 'v-lazy-image';
 
 const props = defineProps<{
   game: Game;
@@ -17,8 +19,8 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
 
 <template>
   <div class="group card image-full max-h-52 grow bg-base-100 transition hover:scale-105 sm:w-80">
-    <figure>
-      <img
+    <figure class="min-h-32">
+      <v-lazy-image
         :src="headerImage"
         class="grow opacity-25 transition-opacity group-hover:opacity-75"
         alt="Game picture"
