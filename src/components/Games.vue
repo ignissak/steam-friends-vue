@@ -207,7 +207,11 @@ handleFilterChange();
       </div>
       <div class="flex items-center gap-1">
         <template v-for="user in users" :key="user.steamid">
-          <button class="avatar tooltip" :data-tip="user.personaname" @click="selectUser(user)">
+          <button
+            class="avatar tooltip first:tooltip-right sm:first:tooltip-top"
+            :data-tip="user.personaname"
+            @click="selectUser(user)"
+          >
             <div
               class="w-8 rounded-full transition-all hover:grayscale-0"
               :class="{
