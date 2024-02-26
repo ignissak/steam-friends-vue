@@ -17,7 +17,7 @@ progress.start();
     <header class="container mb-2 mt-6 flex flex-row items-center justify-between">
       <div>
         <h1>Steam Friends Library Compare</h1>
-        <span class="block text-sm text-neutral-700 sm:inline">version 1.1.2</span>
+        <span class="block text-sm text-neutral-700 sm:inline">version 1.2.0</span>
       </div>
     </header>
     <template v-if="userStore.isLoggedIn">
