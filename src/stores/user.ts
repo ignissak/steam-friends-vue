@@ -58,7 +58,7 @@ export const useUserStore = defineStore(
             credentials: 'include'
           })
             .then(async (response) => {
-              if (!response.ok) reject(response.statusText);
+              if (!response.ok) reject(response);
               const json = await response.json();
               friends.value = json.data;
               resolve();

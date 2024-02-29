@@ -12,17 +12,22 @@ const emit = defineEmits(['reloadComponent']);
 const progress = inject('progress') as any;
 let error = ref('');
 const userStore = useUserStore();
+const router = useRouter();
+
 try {
   await userStore.fetchFriends();
   progress.increase(50);
 } catch (e) {
+  if ((e as any).status === 401) {
+    progress.fail();
+    await router.push('/signout');
+  }
   error.value = 'Failed to fetch friends. Check if your friend list is public and try again later.';
   progress.fail();
 }
 const utilsStore = useUtilsStore();
 const comparisonStore = useComparisonStore();
 
-const router = useRouter();
 const MAX_SELECT = 9;
 
 let friends = ref(userStore.friends);
