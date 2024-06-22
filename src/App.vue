@@ -13,18 +13,18 @@ progress.start();
 </script>
 
 <template>
-  <div class="flex h-screen flex-col">
-    <header class="container mb-2 mt-6 flex flex-row items-center justify-between">
+  <div class="flex flex-col h-screen">
+    <header class="container flex flex-row items-center justify-between mt-6 mb-2">
       <div>
         <h1>Steam Friends Library Compare</h1>
-        <span class="block text-sm text-neutral-700 sm:inline">version 1.2.0</span>
+        <span class="block text-sm text-neutral-700 sm:inline">version 1.2.1</span>
       </div>
     </header>
     <template v-if="userStore.isLoggedIn">
-      <nav class="container mb-6 flex flex-row items-center justify-between gap-2 sm:gap-4">
-        <router-link to="/dashboard" class="btn btn-xs grow uppercase">Dashboard</router-link>
-        <router-link to="/new" class="btn btn-xs grow uppercase">New comparison</router-link>
-        <router-link to="/signout" class="btn btn-xs grow uppercase">Sign out</router-link>
+      <nav class="container flex flex-row items-center justify-between gap-2 mb-6 sm:gap-4">
+        <router-link to="/dashboard" class="uppercase btn btn-xs grow">Dashboard</router-link>
+        <router-link to="/new" class="uppercase btn btn-xs grow">New comparison</router-link>
+        <router-link to="/signout" class="uppercase btn btn-xs grow">Sign out</router-link>
       </nav>
     </template>
 
