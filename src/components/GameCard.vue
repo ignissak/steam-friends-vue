@@ -18,15 +18,15 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
 </script>
 
 <template>
-  <div class="group card image-full max-h-52 grow bg-base-100 transition hover:scale-105 sm:w-80">
+  <div class="transition group card image-full max-h-52 grow bg-base-100 hover:scale-105 sm:w-80">
     <figure class="min-h-32">
       <v-lazy-image
         :src="headerImage"
-        class="grow opacity-25 transition-opacity group-hover:opacity-75"
+        class="transition-opacity opacity-25 grow group-hover:opacity-75"
         alt="Game picture"
       />
     </figure>
-    <div class="card-body justify-between gap-4">
+    <div class="justify-between gap-4 card-body">
       <section>
         <div class="text-lg font-medium">
           <a
@@ -37,7 +37,7 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
             >{{ game.name.trim() }}</a
           >
           <h2 class="" v-else-if="game.name && game.name === 'Unknown'">Unknown</h2>
-          <h2 class="" v-else><div class="suspense h-7 w-full"></div></h2>
+          <h2 class="" v-else><div class="w-full suspense h-7"></div></h2>
         </div>
         <span v-if="users.length === comparison.users.length" class="text-sm text-neutral-400"
           >All of you own this game!</span
@@ -57,7 +57,7 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
             :data-tip="user.personaname"
           >
             <div class="w-6 rounded-full">
-              <img :src="user.avatarmedium" :alt="user.personaname" />
+              <v-lazy-image :src="user.avatarmedium" :alt="user.personaname" />
             </div></div
         ></template>
       </section>

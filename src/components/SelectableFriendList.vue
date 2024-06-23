@@ -7,6 +7,8 @@ import type { User } from 'steam';
 import { v4 as uuidv4 } from 'uuid';
 import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
+/** @ts-ignore */
+import VLazyImage from 'v-lazy-image';
 
 const emit = defineEmits(['reloadComponent']);
 const progress = inject('progress') as any;
@@ -148,11 +150,11 @@ const shakeFooter = () => {
     </div>
     <section
       id="filters"
-      class="mb-4 flex flex-col items-end justify-between gap-1 md:flex-row md:gap-4"
+      class="flex flex-col items-end justify-between gap-1 mb-4 md:flex-row md:gap-4"
     >
       <!-- Name filter -->
-      <div class="join w-full grow items-end">
-        <label class="form-control join-item w-full">
+      <div class="items-end w-full join grow">
+        <label class="w-full form-control join-item">
           <div class="label">
             <span class="label-text">Filter names</span>
           </div>
@@ -160,7 +162,7 @@ const shakeFooter = () => {
             type="text"
             v-model="filter"
             placeholder="Type here"
-            class="input input-bordered input-sm w-full"
+            class="w-full input input-bordered input-sm"
             @input="handleFilterChange"
           />
         </label>
@@ -178,12 +180,12 @@ const shakeFooter = () => {
         </button>
       </div>
       <!-- Sort by-->
-      <label class="form-control w-full grow">
+      <label class="w-full form-control grow">
         <div class="label">
           <span class="label-text">Sort by</span>
         </div>
         <select
-          class="select select-bordered select-sm w-full"
+          class="w-full select select-bordered select-sm"
           v-model="sortBy"
           @change="handleFilterChange"
         >
@@ -195,12 +197,12 @@ const shakeFooter = () => {
       <button class="btn btn-sm" @click="reset">Reset all</button>
     </section>
 
-    <p v-if="error" class="rounded-lg bg-red-500 py-2 text-center text-neutral-100">{{ error }}</p>
+    <p v-if="error" class="py-2 text-center bg-red-500 rounded-lg text-neutral-100">{{ error }}</p>
 
-    <section class="mb-16 flex flex-row flex-wrap gap-4">
+    <section class="flex flex-row flex-wrap gap-4 mb-16">
       <template v-for="friend in friends" :key="friend.steamid">
         <div
-          class="indicator flex w-full flex-row items-center gap-3 rounded border border-neutral-900 p-2 text-left transition-all hover:bg-neutral-950 sm:w-56 sm:grow md:grow-0"
+          class="flex flex-row items-center w-full gap-3 p-2 text-left transition-all border rounded indicator border-neutral-900 hover:bg-neutral-950 sm:w-56 sm:grow md:grow-0"
           :class="{
             'bg-neutral-950': selectedFriends.includes(friend),
             'cursor-pointer':
@@ -222,16 +224,16 @@ const shakeFooter = () => {
           <!-- TODO: Remove from selection -->
           <div class="avatar indicator">
             <span
-              class="indicator-item h-2 w-2 rounded-full bg-green-600"
+              class="w-2 h-2 bg-green-600 rounded-full indicator-item"
               v-if="friend.personastate === 1"
             ></span>
             <div class="w-12 rounded">
-              <img :src="friend.avatarfull" alt="" />
+              <v-lazy-image :src="friend.avatarfull" alt="" />
             </div>
           </div>
           <div class="select-none">
-            <h2 class="max-w-36 truncate text-sm text-neutral-100">{{ friend.personaname }}</h2>
-            <p class="max-w-36 truncate text-xs text-gray-500">{{ friend.realname }}</p>
+            <h2 class="text-sm truncate max-w-36 text-neutral-100">{{ friend.personaname }}</h2>
+            <p class="text-xs text-gray-500 truncate max-w-36">{{ friend.realname }}</p>
           </div>
         </div>
       </template>
@@ -239,7 +241,7 @@ const shakeFooter = () => {
   </main>
   <transition-slide :offset="[0, 32]">
     <footer
-      class="container btm-nav bg-transparent bg-gradient-to-t from-base-100 to-transparent"
+      class="container bg-transparent btm-nav bg-gradient-to-t from-base-100 to-transparent"
       v-if="selectedFriends.length > 0"
       :class="{ shake: shake }"
     >

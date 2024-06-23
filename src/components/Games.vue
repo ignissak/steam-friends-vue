@@ -3,6 +3,8 @@ import { sort } from 'fast-sort';
 import type { Comparison, Game, User } from 'steam';
 import { inject, onMounted, ref, toRaw } from 'vue';
 import GameCard from './GameCard.vue';
+/** @ts-ignore */
+import VLazyImage from 'v-lazy-image';
 
 const props = defineProps<{
   comparison: Comparison;
@@ -173,10 +175,10 @@ handleFilterChange();
 <template>
   <section
     id="filters"
-    class="mb-4 flex flex-col items-center justify-between gap-1 sm:flex-row sm:items-end sm:gap-4"
+    class="flex flex-col items-center justify-between gap-1 mb-4 sm:flex-row sm:items-end sm:gap-4"
   >
-    <div class="join w-full grow items-end">
-      <label class="form-control join-item w-full">
+    <div class="items-end w-full join grow">
+      <label class="w-full form-control join-item">
         <div class="label">
           <span class="label-text">Game name</span>
         </div>
@@ -184,7 +186,7 @@ handleFilterChange();
           type="text"
           v-model="nameFilter"
           placeholder="Type here"
-          class="input input-bordered input-sm w-full"
+          class="w-full input input-bordered input-sm"
           @input="handleFilterChange"
         />
       </label>
@@ -201,7 +203,7 @@ handleFilterChange();
         Clear
       </button>
     </div>
-    <div class="form-control mb-3 w-full grow sm:mb-auto sm:w-auto">
+    <div class="w-full mb-3 form-control grow sm:mb-auto sm:w-auto">
       <div class="label">
         <span class="label-text">Filter by user</span>
       </div>
@@ -213,13 +215,13 @@ handleFilterChange();
             @click="selectUser(user)"
           >
             <div
-              class="w-8 rounded-full transition-all hover:grayscale-0"
+              class="w-8 transition-all rounded-full hover:grayscale-0"
               :class="{
                 'border-2 border-blue-400 grayscale-0': userFilter.includes(user.steamid),
                 grayscale: !userFilter.includes(user.steamid)
               }"
             >
-              <img :src="user.avatarmedium" :alt="user.personaname" />
+              <v-lazy-image :src="user.avatarmedium" :alt="user.personaname"></v-lazy-image>
             </div>
           </button>
         </template>
@@ -227,14 +229,14 @@ handleFilterChange();
     </div>
     <button
       @click="reset"
-      class="btn btn-outline btn-primary join-item btn-sm w-full grow sm:w-auto"
+      class="w-full btn btn-outline btn-primary join-item btn-sm grow sm:w-auto"
       :disabled="nameFilter.length === 0 && userFilter.length === 0"
     >
       Reset all
     </button>
   </section>
 
-  <section class="mb-16 flex flex-row flex-wrap gap-4" id="games">
+  <section class="flex flex-row flex-wrap gap-4 mb-16" id="games">
     <template v-for="entry in sortedGames" :key="entry.game.appid!!">
       <GameCard
         :game="entry.game"
