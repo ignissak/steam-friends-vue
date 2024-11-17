@@ -1,6 +1,7 @@
 services:
   app:
-    image: 'steam-frontend'
+    image: ghcr.io/ignissak/steam-friends-vue:main
+    container_name: 'steam-frontend'
     build:
       context: .
       dockerfile: Dockerfile
