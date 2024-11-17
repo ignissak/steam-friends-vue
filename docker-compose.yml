@@ -5,12 +5,28 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production-stage
     ports:
-    - 80:80
-    - 443:443
+    - 4173:4173
+    labels:
+      - "traefik.enable=true"
+
+      # HTTP Routers (for redirect)
+      - "traefik.http.routers.steam-frontend.entrypoints=http"
+      - "traefik.http.routers.steam-frontend.rule=Host(`steam.bordas.sk`)"
+      - "traefik.http.routers.steam-frontend.middlewares=redirect-to-https"
+
+      # HTTPS Routers
+      - "traefik.http.routers.steam-frontend-secure.entrypoints=https"
+      - "traefik.http.routers.steam-frontend-secure.rule=Host(`steam.bordas.sk`)"
+      - "traefik.http.routers.steam-frontend-secure.tls=true"
+      - "traefik.http.routers.steam-frontend-secure.tls.certresolver=le"
+      - "traefik.http.routers.steam-frontend-secure.service=steam-frontend"
+      - "traefik.http.services.steam-frontend.loadbalancer.server.port=4173"      
     networks:
-    - steam-friends-fastify_backend
+    - steam-friends-fastify_steam_bordas_backend
+    - proxy
 networks:
-  steam-friends-fastify_backend:
+  steam-friends-fastify_steam_bordas_backend:
+    external: true
+  proxy:
     external: true
