@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "4178:4178"
     labels:
       - "traefik.enable=true"
 

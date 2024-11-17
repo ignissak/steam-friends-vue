@@ -16,4 +16,4 @@ RUN ls -la node_modules/
 
 RUN pnpm build
 
-CMD ["pnpm", "preview"]
+CMD ["pnpm", "preview", "--host"]
