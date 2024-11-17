@@ -18,7 +18,7 @@ services:
       - "traefik.http.routers.steam-frontend-secure.tls=true"
       - "traefik.http.routers.steam-frontend-secure.tls.certresolver=le"
       - "traefik.http.routers.steam-frontend-secure.service=steam-frontend"
-      - "traefik.http.services.steam-frontend.loadbalancer.server.port=4173"      
+      - "traefik.http.services.steam-frontend.loadbalancer.server.port=4178"      
     networks:
     - steam-friends-fastify_steam_bordas_backend
     - proxy
