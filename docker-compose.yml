@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "4178:4178"
     labels:
       - "traefik.enable=true"
 
@@ -18,6 +20,8 @@ services:
       - "traefik.http.routers.steam-frontend-secure.tls=true"
       - "traefik.http.routers.steam-frontend-secure.tls.certresolver=le"
       - "traefik.http.routers.steam-frontend-secure.service=steam-frontend"
+
+      # Service
       - "traefik.http.services.steam-frontend.loadbalancer.server.port=4178"      
     networks:
     - steam-friends-fastify_steam_bordas_backend
