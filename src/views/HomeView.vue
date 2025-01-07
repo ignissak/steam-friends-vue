@@ -24,5 +24,6 @@ if (userStore.isLoggedIn) {
         src="https://community.akamai.steamstatic.com/public/images/signinthroughsteam/sits_01.png"
       />
     </a>
+    <img src="/landing.png" class="mt-4" />
   </main>
 </template>
