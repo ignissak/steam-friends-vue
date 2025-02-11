@@ -1,6 +1,10 @@
 FROM node:lts-slim as build-stage
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+
+RUN echo "Before: corepack version => $(corepack --version || echo 'not installed')"
+RUN npm install -g corepack@latest
+RUN echo "After : corepack version => $(corepack --version)"
 RUN corepack enable
 
 RUN ls -la
