@@ -18,8 +18,10 @@ export default defineConfig({
   },
   preview: {
     port: 4178,
+    allowedHosts: true,
   },
   server: {
     port: 4178,
+    allowedHosts: true,
   }
 })
