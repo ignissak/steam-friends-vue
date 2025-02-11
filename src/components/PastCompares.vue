@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useComparisonStore } from '@/stores/comparison';
 import type { Game, User } from 'steam';
-/** @ts-ignore */
+/** @ts-ignore: VLazyImage does not have TypeScript definitions */
 import VLazyImage from 'v-lazy-image';
 
+import { computed } from 'vue';
+
 const comparisonStore = useComparisonStore();
-comparisonStore.pastComparisons = comparisonStore.pastComparisons.sort(
-  (a, b) => b.createdAt - a.createdAt
-);
+const sortedPastComparisons = computed(() => {
+  return comparisonStore.pastComparisons.slice().sort((a, b) => b.createdAt - a.createdAt);
+});
 
 const formatDate = (date: number) => {
   const d = new Date(date);
@@ -36,7 +38,7 @@ const calculateMatchRate = (
   <main class="container">
     <h2 class="mb-6">Your past comparisons</h2>
     <div class="flex flex-col gap-4">
-      <template v-for="comparison in comparisonStore.pastComparisons" :key="comparison.id">
+      <template v-for="comparison in sortedPastComparisons" :key="comparison.id">
         <router-link
           :to="`/comparison/${comparison.id}`"
           class="flex w-full gap-4 p-4 transition-all card bg-neutral-950 hover:scale-105"

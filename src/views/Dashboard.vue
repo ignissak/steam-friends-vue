@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import PastCompares from '@/components/PastCompares.vue';
 import Profile from '@/components/Profile.vue';
+import type { ProgressBar } from 'steam';
 import { inject } from 'vue';
 
-const progress = inject('progress') as any;
+const progress = inject('progress') as ProgressBar;
 progress.start();
 </script>
 <template>

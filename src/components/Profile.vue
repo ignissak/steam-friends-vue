@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
+import type { ProgressBar } from 'steam';
 import { inject } from 'vue';
 
 const userStore = useUserStore();
 await userStore.fetchUserGames();
 
-(inject('progress') as any).finish();
+const progress = inject('progress') as ProgressBar;
+progress.finish();
 </script>
 
 <template>

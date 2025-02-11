@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Games from '@/components/Games.vue';
 import { useComparisonStore } from '@/stores/comparison';
-import type { Game, User } from 'steam';
+import type { Game, ProgressBar, User } from 'steam';
 import { inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -10,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const id = route.params.id;
 
-const progress = inject('progress') as any;
+const progress = inject('progress') as ProgressBar;
 progress.start();
 
 let comparison = comparisonStore.pastComparisons.find((comparison) => comparison.id === id);

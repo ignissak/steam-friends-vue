@@ -58,6 +58,13 @@ declare module 'steam' {
     calculated: { game: Game; users: User[] }[];
     createdAt: number;
   };
+
+  export type ProgressBar = {
+    increase: (n: number) => void;
+    finish: () => void;
+    start: () => void;
+    fail: () => void;
+  }
 }
 
 declare module '@morev/vue-transitions' {

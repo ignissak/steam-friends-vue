@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user';
+import type { ProgressBar } from 'steam';
 import { inject } from 'vue';
 import { useRouter } from 'vue-router';
 
-const progress = inject('progress') as any;
+const progress = inject('progress') as ProgressBar;
 progress.finish();
 
 const userStore = useUserStore();

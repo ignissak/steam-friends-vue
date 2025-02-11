@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { ProgressBar } from 'steam';
 import { inject } from 'vue';
 
-(inject('progress') as any).fail();
+const progress = inject('progress') as ProgressBar;
+progress.fail();
 </script>
 <template>
   <main class="container flex h-screen flex-col items-center justify-center">

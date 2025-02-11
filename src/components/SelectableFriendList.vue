@@ -3,7 +3,7 @@ import { useComparisonStore } from '@/stores/comparison';
 import { useUserStore } from '@/stores/user';
 import { useUtilsStore } from '@/stores/utils';
 import { sort } from 'fast-sort';
-import type { User } from 'steam';
+import type { ProgressBar, User } from 'steam';
 import { v4 as uuidv4 } from 'uuid';
 import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -11,8 +11,8 @@ import { useRouter } from 'vue-router';
 import VLazyImage from 'v-lazy-image';
 
 const emit = defineEmits(['reloadComponent']);
-const progress = inject('progress') as any;
-let error = ref('');
+const progress = inject('progress') as ProgressBar;
+const error = ref('');
 const userStore = useUserStore();
 const router = useRouter();
 
@@ -35,26 +35,26 @@ const MAX_SELECT = 9;
 let friends = ref(userStore.friends);
 
 let selectedFriends = ref([] as User[]);
-let filter = '';
-let sortBy: 'abc' | 'online' = 'abc';
+let filter = ref('');
+let sortBy = ref<'abc' | 'online'>('abc');
 
 const handleFilterChange = async () => {
   let value = friends.value;
-  if (filter.length > 0) {
+  if (filter.value.length > 0) {
     console.debug('Filtering friends');
     value = userStore.friends.filter((friend) => {
       return (
-        friend.personaname.toLowerCase().includes(filter.toLowerCase()) ||
-        friend.realname?.toLowerCase().includes(filter.toLowerCase())
+        friend.personaname.toLowerCase().includes(filter.value.toLowerCase()) ||
+        friend.realname?.toLowerCase().includes(filter.value.toLowerCase())
       );
     });
   } else {
     value = userStore.friends;
   }
-  if (sortBy === 'abc') {
+  if (sortBy.value === 'abc') {
     console.debug('Sorting alphabetically');
     value = sort(value).asc((friend) => friend.personaname);
-  } else if (sortBy === 'online') {
+  } else if (sortBy.value === 'online') {
     console.debug('Sorting by online status');
     // personastate = 1 means online, 0 = offline, other is treated as 0
     value = sort(value).asc((friend) => {
@@ -92,13 +92,13 @@ const handleSelect = async (friend: User) => {
   handleFilterChange();
 };
 
-handleFilterChange().then(() => {
+await handleFilterChange().then(() => {
   progress.finish();
 });
 
 const reset = async () => {
-  filter = '';
-  sortBy = 'abc';
+  filter.value = '';
+  sortBy.value = 'abc';
   selectedFriends.value = [];
   handleFilterChange();
 };

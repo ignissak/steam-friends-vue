@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import SelectableFriendList from '@/components/SelectableFriendList.vue';
+import type { ProgressBar } from 'steam';
 import { inject, ref, watch } from 'vue';
 
 let id = ref(0);
-const progress = inject('progress') as any;
+const progress = inject('progress') as ProgressBar;
 progress.start();
 
 watch(id, () => {

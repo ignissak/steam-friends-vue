@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort';
 import type { Comparison, Game, User } from 'steam';
-/** @ts-ignore */
+/** @ts-ignore: VLazyImage does not have TypeScript definitions */
 import VLazyImage from 'v-lazy-image';
+import { computed } from 'vue';
 
 const props = defineProps<{
   game: Game;
@@ -11,22 +12,22 @@ const props = defineProps<{
   filteredUsers: string[];
 }>();
 
-sort(props.users).asc((user) => user.personaname);
+const sortedUsers = computed(() => sort(props.users).asc((user) => user.personaname));
 
 const headerImage = `https://cdn.akamai.steamstatic.com/steam/apps/${props.game.appid}/header.jpg`;
 const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
 </script>
 
 <template>
-  <div class="transition group card image-full max-h-52 grow bg-base-100 hover:scale-105 sm:w-80">
+  <div class="group card image-full max-h-52 grow bg-base-100 transition hover:scale-105 sm:w-80">
     <figure class="min-h-32">
       <v-lazy-image
         :src="headerImage"
-        class="transition-opacity opacity-25 grow group-hover:opacity-75"
+        class="grow opacity-25 transition-opacity group-hover:opacity-75"
         alt="Game picture"
       />
     </figure>
-    <div class="justify-between gap-4 card-body">
+    <div class="card-body justify-between gap-4">
       <section>
         <div class="text-lg font-medium">
           <a
@@ -37,17 +38,17 @@ const storeLink = `https://store.steampowered.com/app/${props.game.appid}`;
             >{{ game.name.trim() }}</a
           >
           <h2 class="" v-else-if="game.name && game.name === 'Unknown'">Unknown</h2>
-          <h2 class="" v-else><div class="w-full suspense h-7"></div></h2>
+          <h2 class="" v-else><div class="suspense h-7 w-full"></div></h2>
         </div>
         <span v-if="users.length === comparison.users.length" class="text-sm text-neutral-400"
           >All of you own this game!</span
         >
         <span v-else class="text-sm text-neutral-400"
-          >{{ users.length }}/{{ comparison.users.length }} of you owns this game!</span
+          >{{ users.length }}/{{ comparison.users.length }} of you own this game!</span
         >
       </section>
       <section class="flex gap-1">
-        <template v-for="user in users" :key="user.steamid">
+        <template v-for="user in sortedUsers" :key="user.steamid">
           <div
             class="avatar tooltip first:tooltip-right first:sm:tooltip-top"
             :class="{

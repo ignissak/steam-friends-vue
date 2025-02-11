@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { sort } from 'fast-sort';
-import type { Comparison, Game, User } from 'steam';
+import type { Comparison, Game, ProgressBar, User } from 'steam';
 import { inject, onMounted, ref, toRaw } from 'vue';
 import GameCard from './GameCard.vue';
-/** @ts-ignore */
+/** @ts-ignore: v-lazy-image does not have TypeScript definitions */
 import VLazyImage from 'v-lazy-image';
 
 const props = defineProps<{
@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['onGamesCalculated']);
 
-const progress = inject('progress') as any;
+const progress = inject('progress') as ProgressBar;
 
 const comparison = toRaw(props.comparison); // we don't need this to be reactive
 let initialSortedGames: { game: Game; users: User[] }[] = [];
@@ -20,6 +20,7 @@ const users = comparison.users;
 if (comparison.calculated.length === 0) {
   const allGames: Record<string, Game[]> = {};
   for (const user of users) {
+    // fetch games of every user in the comparison
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/steam/${user.steamid}/games`,
@@ -96,8 +97,8 @@ onMounted(async () => {
     // update game names
     for (const entry of sortedGames.value) {
       if (entry.game.name) continue;
-      if (json.data[entry.game.appid!!] && json.data[entry.game.appid!!].name) {
-        entry.game.name = json.data[entry.game.appid!!].name;
+      if (json.data && json.data[entry.game.appid!] && json.data[entry.game.appid!].name) {
+        entry.game.name = json.data[entry.game.appid!].name;
       } else {
         entry.game.name = 'Unknown';
       }
@@ -109,8 +110,7 @@ onMounted(async () => {
   }
 });
 
-let nameFilter = '';
-// TODO: User filter
+const nameFilter = ref('');
 let userFilter = ref([] as string[]);
 
 const selectUser = async (user: User) => {
@@ -126,15 +126,15 @@ const selectUser = async (user: User) => {
 
 const handleFilterChange = async () => {
   let value = sortedGames.value;
-  if (nameFilter.length > 0) {
-    console.debug('Filtering games', nameFilter);
+  if (nameFilter.value.length > 0) {
+    console.debug('Filtering games', nameFilter.value);
     value = initialSortedGames.filter((entry) => {
-      return entry.game.name?.toLowerCase().includes(nameFilter.toLowerCase());
+      return entry.game.name?.toLowerCase().includes(nameFilter.value.toLowerCase());
     });
   } else {
     value = initialSortedGames;
   }
-  if (nameFilter.length === 0) {
+  if (nameFilter.value.length === 0) {
     console.debug('Sorting by initial count');
     value = initialSortedGames;
   } else {
@@ -164,7 +164,7 @@ const handleFilterChange = async () => {
 };
 
 const reset = async () => {
-  nameFilter = '';
+  nameFilter.value = '';
   userFilter.value = [];
   handleFilterChange();
 };
@@ -175,10 +175,10 @@ handleFilterChange();
 <template>
   <section
     id="filters"
-    class="flex flex-col items-center justify-between gap-1 mb-4 sm:flex-row sm:items-end sm:gap-4"
+    class="mb-4 flex flex-col items-center justify-between gap-1 sm:flex-row sm:items-end sm:gap-4"
   >
-    <div class="items-end w-full join grow">
-      <label class="w-full form-control join-item">
+    <div class="join w-full grow items-end">
+      <label class="form-control join-item w-full">
         <div class="label">
           <span class="label-text">Game name</span>
         </div>
@@ -186,7 +186,7 @@ handleFilterChange();
           type="text"
           v-model="nameFilter"
           placeholder="Type here"
-          class="w-full input input-bordered input-sm"
+          class="input input-bordered input-sm w-full"
           @input="handleFilterChange"
         />
       </label>
@@ -203,7 +203,7 @@ handleFilterChange();
         Clear
       </button>
     </div>
-    <div class="w-full mb-3 form-control grow sm:mb-auto sm:w-auto">
+    <div class="form-control mb-3 w-full grow sm:mb-auto sm:w-auto">
       <div class="label">
         <span class="label-text">Filter by user</span>
       </div>
@@ -215,7 +215,7 @@ handleFilterChange();
             @click="selectUser(user)"
           >
             <div
-              class="w-8 transition-all rounded-full hover:grayscale-0"
+              class="w-8 rounded-full transition-all hover:grayscale-0"
               :class="{
                 'border-2 border-blue-400 grayscale-0': userFilter.includes(user.steamid),
                 grayscale: !userFilter.includes(user.steamid)
@@ -229,15 +229,15 @@ handleFilterChange();
     </div>
     <button
       @click="reset"
-      class="w-full btn btn-outline btn-primary join-item btn-sm grow sm:w-auto"
+      class="btn btn-outline btn-primary join-item btn-sm w-full grow sm:w-auto"
       :disabled="nameFilter.length === 0 && userFilter.length === 0"
     >
       Reset all
     </button>
   </section>
 
-  <section class="flex flex-row flex-wrap gap-4 mb-16" id="games">
-    <template v-for="entry in sortedGames" :key="entry.game.appid!!">
+  <section class="mb-16 flex flex-row flex-wrap gap-4" id="games">
+    <template v-for="entry in sortedGames" :key="entry.game.appid || entry.game.name">
       <GameCard
         :game="entry.game"
         :users="entry.users"
