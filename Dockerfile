@@ -1,4 +1,4 @@
-FROM node:lts-slim as build-stage
+FROM node:lts-slim AS build-stage
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -7,16 +7,15 @@ RUN npm install -g corepack@latest
 RUN echo "After : corepack version => $(corepack --version)"
 RUN corepack enable
 
-RUN ls -la
-
-COPY package.json /app/package.json
 WORKDIR /app
 
-RUN pnpm install
+# Copy package files first for better layer caching
+COPY package.json pnpm-lock.yaml ./
 
-COPY . /app
-RUN ls -la
-RUN ls -la node_modules/
+RUN pnpm install --frozen-lockfile
+
+# Copy the rest of the application
+COPY . .
 
 RUN pnpm build
 
