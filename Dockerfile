@@ -17,6 +17,6 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the application
 COPY . .
 
-RUN pnpm build
+RUN pnpm build-only
 
 CMD ["pnpm", "preview", "--host"]
